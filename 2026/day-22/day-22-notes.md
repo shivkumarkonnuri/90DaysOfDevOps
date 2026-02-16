@@ -28,6 +28,8 @@ Without Git, DevOps workflows cannot function.
 - You can use Git without GitHub.
 - GitHub uses Git, but Git is not equal to GitHub.
 
+---
+
 ### 4. Difference between git add and git commit
 
 - `git add` moves changes from the working directory to the staging area.
@@ -69,4 +71,5 @@ If the `.git/` folder is deleted, the project remains but it is no longer a Git 
 - **Working Directory** → Where you edit files.
 - **Staging Area** → Where changes are prepared before committing.
 - **Repository** → Where committed changes are permanently stored in history.
+
 
