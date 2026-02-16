@@ -28,23 +28,21 @@ Without Git, DevOps workflows cannot function.
 - You can use Git without GitHub.
 - GitHub uses Git, but Git is not equal to GitHub.
 
-# Day 22 – Notes
-
-### 1. Difference between git add and git commit
+### 4. Difference between git add and git commit
 
 - `git add` moves changes from the working directory to the staging area.
 - `git commit` moves changes from the staging area to the repository history.
 
 ---
 
-### 2. What does the staging area do?
+### 5. What does the staging area do?
 
 The staging area stores changes before committing them to the repository.  
 It allows selective commits so you can control what gets included in a commit.
 
 ---
 
-### 3. What does git log show?
+### 6. What does git log show?
 
 `git log` shows the commit history of the repository including:
 - Commit hash
@@ -54,7 +52,7 @@ It allows selective commits so you can control what gets included in a commit.
 
 ---
 
-### 4. What is the .git/ folder?
+### 7. What is the .git/ folder?
 
 The `.git/` folder contains all repository data including:
 - Commit history
@@ -66,8 +64,9 @@ If the `.git/` folder is deleted, the project remains but it is no longer a Git 
 
 ---
 
-### 5. Working Directory vs Staging Area vs Repository
+### 8. Working Directory vs Staging Area vs Repository
 
 - **Working Directory** → Where you edit files.
 - **Staging Area** → Where changes are prepared before committing.
 - **Repository** → Where committed changes are permanently stored in history.
+
