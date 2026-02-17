@@ -66,9 +66,7 @@ To resolve:
 
 1. Open the conflicted file  
 2. Remove conflict markers:
-   <<<<<<<  
-   =======  
-   >>>>>>>  
+   "<<<<<<< ======= >>>>>>>"  
 3. Keep correct content  
 4. Run:
    git add <file>
