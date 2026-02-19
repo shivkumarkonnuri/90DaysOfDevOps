@@ -1,256 +1,220 @@
-# 📘 Day 24 – Advanced Git: Merge, Rebase, Stash & Cherry Pick
+# 📘 Day 24 – Advanced Git (Merge, Rebase, Squash, Stash, Cherry-Pick)
+
+---
+
+# 🧠 Core Mental Model
+
+- A branch is just a pointer to a commit.
+- A commit is a snapshot + reference to its parent.
+- Git history is a directed acyclic graph (DAG).
+- Conflicts are usually caused by:
+  - Line overlap
+  - Context mismatch
+  - Logical dependency
 
 ---
 
 # 1️⃣ Git Merge
 
-## 🔹 What is Merge?
-
-Merge combines changes from one branch into another.
-
-It preserves commit history and does NOT rewrite commits.
-
----
-
 ## 🔹 Fast-Forward Merge
 
-Happens when the target branch has not moved ahead.
+Condition:
+Target branch has not moved since feature branch was created.
 
 Example:
 
-A → B → C (feature)  
-      ↑  
-    master  
+A → B → C (feature)
+      ↑
+    master
 
 After merge:
 
 A → B → C (master)
 
-✔ Git simply moves the branch pointer forward  
-✔ No merge commit created  
+✔ No merge commit  
+✔ Pointer just moves forward  
 
 ---
 
 ## 🔹 Merge Commit
 
-Happens when both branches moved separately (diverged).
+Condition:
+Both branches moved independently after common ancestor.
 
-Example before merge:
+Before:
 
-        C → D (feature)
+        D (feature)
        /
-A → B → E (master)
+A → B → C
+            \
+             E (master)
 
 After merge:
 
-        C → D
-       /      \
-A → B → E ---- M
+        D
+       /  \
+A → B → C → E → M
 
-✔ Git creates a merge commit (M)  
-✔ History of both branches is preserved  
+✔ Merge commit (M) created  
+✔ Two parents  
+✔ Branch history preserved  
 
 ---
 
-## 🔹 What is a Merge Conflict?
+## 🔹 Merge Conflict
 
-A merge conflict occurs when:
+Occurs when:
+- Same file
+- Same line(s)
+- Modified differently
 
-- The same file  
-- Same line  
-- Modified differently in two branches  
-
-Git cannot decide automatically.
-
-To resolve:
-
-1. Open the conflicted file  
-2. Remove conflict markers:
-   "<<<<<<< ======= >>>>>>>"  
-3. Keep correct content  
-4. Run:
-   git add <file>
-5. Complete merge or rebase  
+Resolution:
+1. Open file
+2. Remove conflict markers
+3. Keep correct logic
+4. git add
+5. Complete merge
 
 ---
 
 # 2️⃣ Git Rebase
 
-## 🔹 What is Rebase?
+## 🔹 What Rebase Does
 
-Rebase takes feature branch commits and replays them on top of another branch.
+Replays current branch commits on top of another branch.
 
-It rewrites history by creating new commit hashes.
+Before:
 
----
-
-## 🔹 What Rebase Actually Does
-
-Before rebase:
-
-        C → D (feature)
+        D
        /
-A → B → E (master)
+A → B → C → E
 
 After rebase:
 
-A → B → E → C' → D'
+A → B → C → E → D'
 
-✔ History becomes linear  
+✔ Linear history  
 ✔ No merge commit  
 ✔ Commit hashes change  
 
 ---
 
-## 🔹 Why Do Commit Hashes Change?
+## 🔹 Why Hash Changes?
 
 Commit hash depends on:
+- Content
+- Parent
+- Metadata
 
-- Parent commit  
-- Content  
-- Metadata  
-
-If parent changes → hash changes.
-
-Rebase recreates commits → new hashes are generated.
-
----
-
-## 🔹 Why Rebase is Dangerous on Shared Branches
-
-Rebase rewrites history.
-
-If a branch was already pushed and teammates pulled it:
-
-- Their history will differ  
-- Push requires force push  
-- Causes confusion and conflicts  
+Changing parent → new hash.
 
 ---
 
 ## 🔹 When to Use Rebase
 
-✔ On local feature branch  
-✔ Before merging to keep history clean  
-✔ When working alone  
+✔ Private feature branches  
+✔ Before merging for clean history  
 
 ---
 
 ## 🔹 When NOT to Use Rebase
 
-❌ On shared master/main branch  
-❌ On production branches  
-❌ On branches already used by team  
+❌ Shared branches  
+❌ Already pushed commits  
+❌ Production branches  
+
+Rebase rewrites history → force push required.
 
 ---
 
 # 3️⃣ Squash Merge
 
-## 🔹 What is Squash Merge?
+## 🔹 What It Does
 
-Combines multiple commits into a single commit before merging.
+Combines all commits into one.
 
-Example:
+Feature branch:
 
-Feature branch commits:
-- Fix typo  
-- Update spacing  
-- Add validation  
+Fix typo  
+Refactor logic  
+Add validation  
 
-After squash merge:
+After squash:
 
-One clean commit added to master.
+Add profile feature  
 
----
-
-## 🔹 Trade-off
-
-✔ Cleaner history  
-❌ Lose individual commit details  
+✔ Clean history  
+✔ One commit per feature  
+❌ Individual commits lost  
 
 ---
 
 # 4️⃣ Git Stash
 
-## 🔹 What is Stash?
+## 🔹 Purpose
 
-Temporarily saves uncommitted changes so you can switch branches safely.
-
----
-
-## 🔹 Useful Commands
-
-Save changes:
-git stash
-
-List stashes:
-git stash list
-
-Apply without deleting:
-git stash apply
-
-Apply and remove:
-git stash pop
+Temporarily store uncommitted changes.
 
 ---
 
-## 🔹 When to Use Stash
+## 🔹 Commands
 
-✔ Urgent branch switch  
-✔ Mid-work interruption  
-✔ Hotfix situation  
-
----
-
-# 5️⃣ Cherry Pick
-
-## 🔹 What is Cherry Pick?
-
-Applies a specific commit from one branch onto another.
-
-Command:
-git cherry-pick <commit-hash>
+git stash  
+git stash apply  
+git stash pop  
+git stash list  
 
 ---
 
-## 🔹 When to Use
+## 🔹 Important
 
-✔ Apply specific hotfix  
-✔ Select only one change from feature branch  
-✔ Avoid merging entire branch  
-
----
-
-## 🔹 Risks
-
-❌ Duplicate commits  
-❌ Conflicts  
-❌ Confusing history if overused  
+- Not branch-specific
+- Applies to current branch
+- Can cause conflicts
+- Stored locally
 
 ---
 
-# 🧠 Key Mental Model Learned
+# 5️⃣ Cherry-Pick
 
-- Git is a tree of commits  
-- A branch is just a pointer to a commit  
-- Merge preserves history  
-- Rebase rewrites history  
-- Commit hash changes if parent changes  
-- Use rebase only on private branches  
+## 🔹 What It Does
+
+Applies specific commit diff to current branch.
+
+git cherry-pick <hash>
 
 ---
 
-# 🎯 Personal Reflection
+## 🔹 Internally
 
-Today I experienced:
+- Applies patch (diff)
+- Uses surrounding context lines
+- If context mismatch → conflict
 
-- Real rebase conflict  
-- Commit hash changes  
-- History rewriting  
-- Graph confusion and clarity  
+---
 
-Now I understand:
+## 🔹 Conflict Causes
 
-Merge = Safe and preserves history  
-Rebase = Clean history but risky on shared branches  
+✔ Logical dependency  
+✔ Same line modification  
+✔ Context mismatch  
+✔ Ambiguous identical blocks  
 
+---
+
+## 🔹 Best Practices
+
+✔ Keep commits independent  
+✔ Inspect with git show  
+✔ Use git cherry-pick -x  
+✔ Separate hotfix from feature work  
+
+---
+
+# 🎯 Final Learnings
+
+Merge → preserves history  
+Rebase → rewrites history  
+Squash → compresses history  
+Stash → temporary working storage  
+Cherry-pick → selective patch application  
