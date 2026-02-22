@@ -1,203 +1,201 @@
-**Day 13 \- Linux Volume Management**
+# 💾 Day 13 – Linux Volume Management (LVM)
 
-\#\# Objective  
-To understand and practice Linux Logical Volume Management (LVM) by creating physical volumes, volume groups, logical volumes, formatting them with filesystems, mounting them, and making the mounts persistent.
+---
 
-\---
+## 🎯 Objective
 
-\#\# Environment  
-\- OS: Ubuntu Linux  
-\- Storage: Extra EBS volume (22 GB)  
-\- Privileges: Root user
+To understand and practice Linux Logical Volume Management (LVM) by:
 
-\---
+- Creating Physical Volumes (PV)
+- Creating Volume Groups (VG)
+- Creating Logical Volumes (LV)
+- Formatting with filesystems
+- Mounting volumes
+- Making mounts persistent
 
-\#\# Task 1: Check Current Storage
+---
 
-\#\#\# Commands Used  
-\`\`\`bash  
-lsblk  
-pvs  
-vgs  
-lvs  
-df \-h
+## 🖥 Environment
 
-### **Observation**
+- **OS:** Ubuntu Linux  
+- **Storage:** Extra EBS volume (22 GB)  
+- **Privileges:** Root user  
+
+---
+
+# 🔹 Task 1: Check Current Storage
+
+### Commands Used
+
+```bash
+lsblk
+pvs
+vgs
+lvs
+df -h
+```
+
+### Observation
 
 Checked existing disks, partitions, and mounted filesystems before starting LVM configuration.
 
 ---
 
-## **Task 2: Create Physical Volumes (PV)**
+# 🔹 Task 2: Create Physical Volumes (PV)
 
-I had extra EBS storage available, so I skipped creating a fake disk.
+Since extra EBS storage was available, no fake disk was created.
 
-### **Physical Volumes Created**
+### Physical Volumes Created
 
-* 10 GB  
-* 6 GB  
-* 6 GB
+- 10 GB  
+- 6 GB  
+- 6 GB  
 
-### **Commands Used**
+### Command Used
 
-root@ip-172-31-13-238:/tmp\# pvcreate /dev/nvme1n1 /dev/nvme2n1 /dev/nvme3n1  
-  Physical volume "/dev/nvme1n1" successfully created.  
-  Physical volume "/dev/nvme2n1" successfully created.  
-  Physical volume "/dev/nvme3n1" successfully created.  
-root@ip-172-31-13-238:/tmp\# pvs  
-  PV           VG Fmt  Attr PSize  PFree  
-  /dev/nvme1n1    lvm2 \---   6.00g  6.00g  
-  /dev/nvme2n1    lvm2 \---   6.00g  6.00g  
-  /dev/nvme3n1    lvm2 \---  10.00g 10.00g
+```bash
+pvcreate /dev/nvme1n1 /dev/nvme2n1 /dev/nvme3n1
+pvs
+```
 
-### **Observation**
+### Observation
 
 All three disks were successfully initialized as Physical Volumes.
 
 ---
 
-## **Task 3: Create Volume Group (VG)**
+# 🔹 Task 3: Create Volume Group (VG)
 
-### **Volume Group Name**
+### Volume Group Name
 
-* devops-vg
+- `devops-vg`
 
-### **Commands Used**
+### Commands Used
 
-root@ip-172-31-13-238:/tmp\# vgcreate devops-vg /dev/nvme1n1 /dev/nvme2n1 /dev/nvme3n1  
-  Volume group "devops-vg" successfully created  
-root@ip-172-31-13-238:/tmp\# vgs  
-  VG        \#PV \#LV \#SN Attr   VSize   VFree  
-  devops-vg   3   0   0 wz--n- \<21.99g \<21.99g
+```bash
+vgcreate devops-vg /dev/nvme1n1 /dev/nvme2n1 /dev/nvme3n1
+vgs
+```
 
-### **Observation**
+### Observation
 
-The volume group was created by combining all three physical volumes.
-
----
-
-## 
-
-## 
-
-## **Task 4: Create Logical Volumes (LV)**
-
-### **Logical Volumes Created**
-
-* consdata1 – 10 GB  
-* consdata2 – 6 GB  
-* consdata3 – 6 GB
-
-### **Commands Used**
-
-root@ip-172-31-13-238:/home/ubuntu\# lvcreate \-L 10G \-n consdata1 devops-vg  
-WARNING: ext4 signature detected on /dev/devops-vg/consdata1 at offset 1080\. Wipe it? \[y/n\]: y  
-  Wiping ext4 signature on /dev/devops-vg/consdata1.  
-  Logical volume "consdata1" created.  
-root@ip-172-31-13-238:/home/ubuntu\# lvcreate \-L 6G \-n consdata2 devops-vg  
-  Logical volume "consdata2" created.  
-root@ip-172-31-13-238:/home/ubuntu\# lvcreate \-L 5.9G \-n consdata3 devops-vg  
-  Rounding up size to full physical extent 5.90 GiB  
-  Logical volume "consdata3" created.  
-root@ip-172-31-13-238:/home/ubuntu\# lvs  
-  LV        VG        Attr       LSize  Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert  
-  consdata1 devops-vg \-wi-a----- 10.00g  
-  consdata2 devops-vg \-wi-a-----  6.00g  
-  consdata3 devops-vg \-wi-a-----  5.90g
-
-### **Observation**
-
-All logical volumes were created successfully inside the volume group.
+The volume group was created by combining all three physical volumes into a single storage pool (~22 GB).
 
 ---
 
-## **Task 5: Format and Mount Logical Volumes**
+# 🔹 Task 4: Create Logical Volumes (LV)
 
-### **Directories Created**
+### Logical Volumes Created
 
-/consdata1  
-/consdata2  
+- `consdata1` – 10 GB  
+- `consdata2` – 6 GB  
+- `consdata3` – ~5.9 GB  
+
+### Commands Used
+
+```bash
+lvcreate -L 10G -n consdata1 devops-vg
+lvcreate -L 6G -n consdata2 devops-vg
+lvcreate -L 5.9G -n consdata3 devops-vg
+lvs
+```
+
+### Observation
+
+All logical volumes were successfully created inside the volume group.
+
+This demonstrates how LVM divides a storage pool into flexible logical partitions.
+
+---
+
+# 🔹 Task 5: Format and Mount Logical Volumes
+
+### Directories Created
+
+```
+/consdata1
+/consdata2
 /consdata3
+```
 
-### **Commands Used**
+### Format with ext4 Filesystem
 
-root@ip-172-31-13-238:/home/ubuntu\# mkfs.ext4 /dev/devops-vg/consdata1  
-mke2fs 1.47.0 (5-Feb-2023)  
-Creating filesystem with 2621440 4k blocks and 655360 inodes  
-Filesystem UUID: ed395ae0-2983-427c-95e8-b09272b1429a  
-Superblock backups stored on blocks:  
-        32768, 98304, 163840, 229376, 294912, 819200, 884736, 1605632
+```bash
+mkfs.ext4 /dev/devops-vg/consdata1
+mkfs.ext4 /dev/devops-vg/consdata2
+mkfs.ext4 /dev/devops-vg/consdata3
+```
 
-Allocating group tables: done  
-Writing inode tables: done  
-Creating journal (16384 blocks): done  
-Writing superblocks and filesystem accounting information: done
+### Mount Logical Volumes
 
-root@ip-172-31-13-238:/home/ubuntu\# mkfs.ext4 /dev/devops-vg/consdata2  
-mke2fs 1.47.0 (5-Feb-2023)  
-Creating filesystem with 1572864 4k blocks and 393216 inodes  
-Filesystem UUID: 96e8076e-2a7d-4210-a420-9601a82c3ce3  
-Superblock backups stored on blocks:  
-        32768, 98304, 163840, 229376, 294912, 819200, 884736
+```bash
+mount /dev/devops-vg/consdata1 /consdata1
+mount /dev/devops-vg/consdata2 /consdata2
+mount /dev/devops-vg/consdata3 /consdata3
+```
 
-Allocating group tables: done  
-Writing inode tables: done  
-Creating journal (16384 blocks): done  
-Writing superblocks and filesystem accounting information: done
+### Verification
 
-root@ip-172-31-13-238:/home/ubuntu\# mkfs.ext4 /dev/devops-vg/consdata3  
-mke2fs 1.47.0 (5-Feb-2023)  
-Creating filesystem with 1547264 4k blocks and 387072 inodes  
-Filesystem UUID: 508c0a7b-4d34-4a92-8cea-37f41f1e7858  
-Superblock backups stored on blocks:  
-        32768, 98304, 163840, 229376, 294912, 819200, 884736
-
-Allocating group tables: done  
-Writing inode tables: done  
-Creating journal (16384 blocks): done  
-Writing superblocks and filesystem accounting information: done
-
-root@ip-172-31-13-238:/home/ubuntu\# mount /dev/devops-vg/consdata1 /consdata1  
-root@ip-172-31-13-238:/home/ubuntu\# mount /dev/devops-vg/consdata2 /consdata2  
-root@ip-172-31-13-238:/home/ubuntu\# mount /dev/devops-vg/consdata3 /consdata3
-
-### 
-
-### **Verification**
-
-df \-h  
+```bash
+df -h
 lsblk
+```
+
+All logical volumes were successfully mounted.
 
 ---
 
-## **Task 6: Make Mounts Persistent**
+# 🔹 Task 6: Make Mounts Persistent
 
-### **Commands Used**
+To ensure mounts persist after reboot, UUID-based entries were added to `/etc/fstab`.
 
-root@ip-172-31-13-238:/home/ubuntu\# blkid /dev/devops-vg/consdata1 /dev/devops-vg/consdata2 /dev/devops-vg/consdata3  
-/dev/devops-vg/consdata1: UUID="ed395ae0-2983-427c-95e8-b09272b1429a" BLOCK\_SIZE="4096" TYPE="ext4"  
-/dev/devops-vg/consdata2: UUID="96e8076e-2a7d-4210-a420-9601a82c3ce3" BLOCK\_SIZE="4096" TYPE="ext4"
+### Get UUID
 
-/dev/devops-vg/consdata3: UUID="508c0a7b-4d34-4a92-8cea-37f41f1e7858" BLOCK\_SIZE="4096" TYPE="ext4"
+```bash
+blkid /dev/devops-vg/consdata1
+blkid /dev/devops-vg/consdata2
+blkid /dev/devops-vg/consdata3
+```
 
-Added the UUID entries to /etc/fstab to ensure mounts persist after reboot.
+### Add to `/etc/fstab`
 
-### **Verification**
+Example entry:
 
-mount \-a
+```
+UUID=<uuid-value>  /consdata1  ext4  defaults  0  2
+```
+
+(Repeated for all logical volumes)
+
+### Verification
+
+```bash
+mount -a
+```
+
+No errors confirmed correct configuration.
 
 ---
 
-## **What I Learned**
+# 📚 What I Learned
 
-* How LVM abstracts physical storage into flexible logical volumes  
-* How multiple disks can be combined into a single volume group  
-* How to create, format, and mount logical volumes  
-* Importance of UUID-based mounting for persistence and reliability
+- How LVM abstracts physical storage into flexible logical volumes
+- How multiple disks can be combined into a single Volume Group
+- How to create and manage Logical Volumes
+- How to format and mount volumes
+- Importance of UUID-based mounting for reliability
+- How LVM is used in real production environments
 
 ---
 
-## **Conclusion**
+# ✅ Conclusion
 
-This exercise helped me understand real-world LVM usage, similar to how storage is managed in production environments. Creating multiple logical volumes from a single volume group demonstrated the flexibility and power of LVM.
+This exercise demonstrated the flexibility and scalability of LVM.
 
+Creating multiple logical volumes from a single volume group shows how:
+
+- Storage can be dynamically allocated
+- Infrastructure can scale easily
+- Disk management becomes more efficient in production environments
+
+🚀 **Day 13 – Linux Volume Management Completed**
