@@ -1,4 +1,3 @@
-````markdown
 # Day 73 -- Introduction to Observability and Prometheus
 
 ---
@@ -355,4 +354,4 @@ The named volume stores data on the EC2 host disk -- containers come and go, but
 - Prometheus Docs: https://prometheus.io/docs/
 - Reference repo: https://github.com/LondheShubham153/observability-for-devops
 - PromQL cheatsheet: https://promlabs.com/promql-cheat-sheet/
-````
+
