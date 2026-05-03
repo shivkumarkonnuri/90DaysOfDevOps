@@ -489,27 +489,3 @@ scrape_configs:
 ```
 
 ---
-
-## Submission
-
-```bash
-mkdir -p ~/observability-for-devops/2026/day-77
-cp day-77-observability-project.md ~/observability-for-devops/2026/day-77/
-cd ~/observability-for-devops
-git add 2026/day-77/day-77-observability-project.md
-git commit -m "Day 77: Full observability stack capstone - Prometheus, Grafana, Loki, Promtail, OTEL Collector"
-git push origin main
-```
-
----
-
-## Cleanup
-
-```bash
-# When done exploring — removes containers AND named volumes
-docker compose down -v
-```
-
----
-
-*Day 77 of #90DaysOfDevOps | #DevOpsKaJosh | #TrainWithShubham*
